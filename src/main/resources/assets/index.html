@@ -1,0 +1,59 @@
+<h1>Sargent</h1>
+<p>Sargent is a simple DropWizard based Web application to allow command line programs to be run as web services.  Yes, I know this is dangerous, but so is driving a car.  If one is careful both can be done safely.</p>
+<h2>Usage</h2>
+<pre><code>    java -jar sargent.jar server sargent.yml</code></pre>
+<h2>Defining services</h2>
+<p>Add a section to sargent.yml</p>
+<pre><code>workers:
+  - endPoint: registration
+    commandLine: python -iterations @iterations @PatientCode
+    defaults:
+      foo: "this is foo"
+      bar: "this is bar"
+      iterations: 10000
+
+  - endPoint: sleep
+    commandLine: sleep @seconds
+    defaults:
+      seconds: 120</code></pre>
+<p>Each service has several options</p>
+<ul>
+<li><strong>endPoint</strong>: name of the service, <a href="http://localhost:8080/service/endPoint">http://localhost:8080/service/endPoint</a></li>
+<li><strong>commandLine</strong>: command line to run<ul>
+<li>any parameters of the form @key will be replaced by POST parameters</li>
+</ul>
+</li>
+<li><strong>defaults</strong>: map of command line defaults</li>
+</ul>
+<h2>Examples</h2>
+<h3>Sleep</h3>
+<pre><code>curl -POST -d seconds=120 http://localhost:8080/service/sleep
+{
+   "uuid":"519898b5-5afb-413d-bfc3-a2ff3a94afbd",
+   "commandLine":"sleep 120",
+    "exitValue":-1,
+   "status":"running",
+   "output":""
+}</code></pre>
+<p>The response to the post includes the job <code>uuid</code> used to look up status, the <code>commandLine</code> called, <code>exitValue</code> (-1 until the status is done), <code>status</code> of the job, and <code>output</code> of the job, when completed.</p>
+<p>Status can be fetched using the <code>uuid</code>:</p>
+<pre><code>curl http://localhost:8080/job/519898b5-5afb-413d-bfc3-a2ff3a94afbd
+{
+   "uuid":"519898b5-5afb-413d-bfc3-a2ff3a94afbd",
+   "commandLine":"sleep 120",
+    "exitValue":0,
+   "status":"done",
+   "output":""
+}</code></pre>
+<p>Status from all jobs can be fetched:</p>
+<pre><code>curl http://localhost:8080/job
+
+{
+    "519898b5-5afb-413d-bfc3-a2ff3a94afbd": {
+        "uuid": "519898b5-5afb-413d-bfc3-a2ff3a94afbd",
+        "commandLine": "sleep 120",
+        "exitValue": 0,
+        "status": "done",
+        "output": ""
+    }
+}</code></pre>
