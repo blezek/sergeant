@@ -40,7 +40,9 @@ dependencies {
         'commons-dbcp:commons-dbcp:1.4',
     "org.springframework:spring-jdbc:3.2.2.RELEASE",
 "org.zeroturnaround:zt-exec:1.5",
-    "org.apache.commons:commons-exec:1.1"
+    "org.apache.commons:commons-exec:1.1",
+    "org.quartz-scheduler:quartz:2.2.1",
+
 
 
 )

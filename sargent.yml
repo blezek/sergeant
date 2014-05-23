@@ -16,4 +16,9 @@ services:
     commandLine: sleep @seconds
     defaults:
       seconds: 120
+
+  - endPoint: echo
+    commandLine: echo @text
+    defaults:
+      text: This space for rent
       

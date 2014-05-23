@@ -27,7 +27,7 @@ Add a section to sargent.yml
 
 Each service has several options
 
-- **endPoint**: name of the service, http://localhost:8080/service/endPoint
+- **endPoint**: name of the service, http://localhost:8080/rest/service/endPoint
 - **commandLine**: command line to run
   - any parameters of the form @key will be replaced by POST parameters
 - **defaults**: map of command line defaults
@@ -36,7 +36,7 @@ Examples
 --------
 
 ### Sleep
-    curl -POST -d seconds=120 http://localhost:8080/service/sleep
+    curl -POST -d seconds=120 http://localhost:8080/rest/service/sleep
     {
        "uuid":"519898b5-5afb-413d-bfc3-a2ff3a94afbd",
        "commandLine":"sleep 120",
@@ -49,7 +49,7 @@ The response to the post includes the job `uuid` used to look up status, the `co
 
 Status can be fetched using the `uuid`:
 
-    curl http://localhost:8080/job/519898b5-5afb-413d-bfc3-a2ff3a94afbd
+    curl http://localhost:8080/rest/job/519898b5-5afb-413d-bfc3-a2ff3a94afbd
     {
        "uuid":"519898b5-5afb-413d-bfc3-a2ff3a94afbd",
        "commandLine":"sleep 120",
@@ -57,11 +57,11 @@ Status can be fetched using the `uuid`:
        "status":"done",
        "output":""
     }
-    
+
 Status from all jobs can be fetched:
 
-    curl http://localhost:8080/job
-    
+    curl http://localhost:8080/rest/job
+
     {
         "519898b5-5afb-413d-bfc3-a2ff3a94afbd": {
             "uuid": "519898b5-5afb-413d-bfc3-a2ff3a94afbd",
@@ -71,6 +71,3 @@ Status from all jobs can be fetched:
             "output": ""
         }
     }
-
-
-    

@@ -1,3 +1,10 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sargent help page</title>
+</head>
+<body>
 <h1>Sargent</h1>
 <p>Sargent is a simple DropWizard based Web application to allow command line programs to be run as web services.  Yes, I know this is dangerous, but so is driving a car.  If one is careful both can be done safely.</p>
 <h2>Usage</h2>
@@ -18,7 +25,7 @@
       seconds: 120</code></pre>
 <p>Each service has several options</p>
 <ul>
-<li><strong>endPoint</strong>: name of the service, <a href="http://localhost:8080/service/endPoint">http://localhost:8080/service/endPoint</a></li>
+<li><strong>endPoint</strong>: name of the service, <a href="http://localhost:8080/rest/service/endPoint">http://localhost:8080/rest/service/endPoint</a></li>
 <li><strong>commandLine</strong>: command line to run<ul>
 <li>any parameters of the form @key will be replaced by POST parameters</li>
 </ul>
@@ -27,7 +34,7 @@
 </ul>
 <h2>Examples</h2>
 <h3>Sleep</h3>
-<pre><code>curl -POST -d seconds=120 http://localhost:8080/service/sleep
+<pre><code>curl -POST -d seconds=120 http://localhost:8080/rest/service/sleep
 {
    "uuid":"519898b5-5afb-413d-bfc3-a2ff3a94afbd",
    "commandLine":"sleep 120",
@@ -37,7 +44,7 @@
 }</code></pre>
 <p>The response to the post includes the job <code>uuid</code> used to look up status, the <code>commandLine</code> called, <code>exitValue</code> (-1 until the status is done), <code>status</code> of the job, and <code>output</code> of the job, when completed.</p>
 <p>Status can be fetched using the <code>uuid</code>:</p>
-<pre><code>curl http://localhost:8080/job/519898b5-5afb-413d-bfc3-a2ff3a94afbd
+<pre><code>curl http://localhost:8080/rest/job/519898b5-5afb-413d-bfc3-a2ff3a94afbd
 {
    "uuid":"519898b5-5afb-413d-bfc3-a2ff3a94afbd",
    "commandLine":"sleep 120",
@@ -46,7 +53,7 @@
    "output":""
 }</code></pre>
 <p>Status from all jobs can be fetched:</p>
-<pre><code>curl http://localhost:8080/job
+<pre><code>curl http://localhost:8080/rest/job
 
 {
     "519898b5-5afb-413d-bfc3-a2ff3a94afbd": {
@@ -57,3 +64,4 @@
         "output": ""
     }
 }</code></pre>
+</body>

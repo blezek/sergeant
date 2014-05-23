@@ -1,5 +1,6 @@
 package edu.mayo.qia.qin.sargent;
 
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import org.zeroturnaround.exec.StartedProcess;
@@ -10,6 +11,7 @@ public class JobInfo {
   @JsonIgnore
   public StartedProcess startedProcess;
 
+  public Date startTime = new Date();
   public String uuid;
   public String commandLine;
 
