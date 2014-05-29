@@ -1,7 +1,9 @@
 package edu.mayo.qia.qin.sargent;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.UUID;
@@ -29,7 +31,8 @@ import org.zeroturnaround.exec.StartedProcess;
 
 public class Worker {
   public String endPoint;
-  public String commandLine;
+  public List<String> commandLine;
+  public Boolean synchronous = Boolean.FALSE;
   public Map<String, String> defaults = new HashMap<String, String>();
 
   @GET
@@ -42,97 +45,45 @@ public class Worker {
   @Produces(MediaType.APPLICATION_JSON)
   public Response post(final MultivaluedMap<String, String> formData) throws Exception {
     String uuid = UUID.randomUUID().toString();
-    String commandLine = formCommandLine(formData);
-    StartedProcess process = new ProcessExecutor().command(parse(commandLine)).readOutput(true).destroyOnExit().timeout(1, TimeUnit.HOURS).start();
-    JobInfo job = new JobInfo();
-    job.commandLine = commandLine;
-    job.uuid = uuid;
-    job.startedProcess = process;
-    Sargent.jobs.put(uuid, job);
-    return Response.ok(job).build();
-  }
+    List<String> commandLine = formCommandLine(formData);
 
-  private String formCommandLine(MultivaluedMap<String, String> formData) {
-    Matcher match = Pattern.compile("@(\\w*)").matcher(commandLine);
-    String cl = commandLine;
-    while (match.find()) {
-      String replacementText = match.group(0);
-      String key = match.group(1);
-      String value = defaults.get(key);
-      if (formData.containsKey(key)) {
-        value = formData.getFirst(key);
+    StartedProcess process = new ProcessExecutor().command(commandLine).readOutput(true).destroyOnExit().timeout(1, TimeUnit.HOURS).start();
+    if (synchronous) {
+      return Response.ok(process.future().get().outputUTF8()).build();
+    } else {
+      JobInfo job = new JobInfo();
+      StringBuilder buffer = new StringBuilder();
+      String sep = "";
+      for (String arg : commandLine) {
+        buffer.append(sep).append(arg);
+        sep = " ";
       }
-      value = value == null ? "" : value;
-      cl = cl.replaceAll(replacementText, value);
+      job.commandLine = buffer.toString();
+      job.uuid = uuid;
+      job.startedProcess = process;
+      Sargent.jobs.put(uuid, job);
+      return Response.ok(job).build();
     }
-
-    return cl;
   }
 
-  private static String[] parse(final String toProcess) {
-    if (toProcess == null || toProcess.length() == 0) {
-      // no command? no string
-      return new String[0];
-    }
-
-    // parse with a simple finite state machine
-
-    final int normal = 0;
-    final int inQuote = 1;
-    final int inDoubleQuote = 2;
-    int state = normal;
-    StringTokenizer tok = new StringTokenizer(toProcess, "\"\' ", true);
-    Vector v = new Vector();
-    StringBuffer current = new StringBuffer();
-    boolean lastTokenHasBeenQuoted = false;
-
-    while (tok.hasMoreTokens()) {
-      String nextTok = tok.nextToken();
-      switch (state) {
-      case inQuote:
-        if ("\'".equals(nextTok)) {
-          lastTokenHasBeenQuoted = true;
-          state = normal;
-        } else {
-          current.append(nextTok);
+  private List<String> formCommandLine(MultivaluedMap<String, String> formData) {
+    List<String> convertedCommandLine = new ArrayList<String>();
+    for (String commandLine : this.commandLine) {
+      Matcher match = Pattern.compile("@(\\w*)").matcher(commandLine);
+      String cl = commandLine;
+      while (match.find()) {
+        String replacementText = match.group(0);
+        String key = match.group(1);
+        String value = defaults.get(key);
+        if (formData.containsKey(key)) {
+          value = formData.getFirst(key);
         }
-        break;
-      case inDoubleQuote:
-        if ("\"".equals(nextTok)) {
-          lastTokenHasBeenQuoted = true;
-          state = normal;
-        } else {
-          current.append(nextTok);
-        }
-        break;
-      default:
-        if ("\'".equals(nextTok)) {
-          state = inQuote;
-        } else if ("\"".equals(nextTok)) {
-          state = inDoubleQuote;
-        } else if (" ".equals(nextTok)) {
-          if (lastTokenHasBeenQuoted || current.length() != 0) {
-            v.addElement(current.toString());
-            current = new StringBuffer();
-          }
-        } else {
-          current.append(nextTok);
-        }
-        lastTokenHasBeenQuoted = false;
-        break;
+        value = value == null ? "" : value;
+        cl = cl.replaceAll(replacementText, value);
       }
+      convertedCommandLine.add(cl);
     }
-
-    if (lastTokenHasBeenQuoted || current.length() != 0) {
-      v.addElement(current.toString());
-    }
-
-    if (state == inQuote || state == inDoubleQuote) {
-      throw new IllegalArgumentException("Unbalanced quotes in " + toProcess);
-    }
-
-    String[] args = new String[v.size()];
-    v.copyInto(args);
-    return args;
+    return convertedCommandLine;
   }
+
 }

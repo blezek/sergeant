@@ -1,5 +1,6 @@
 package edu.mayo.qia.qin.sargent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -14,6 +15,10 @@ public class SargentConfiguration extends Configuration {
   @Valid
   @NotNull
   @JsonProperty
-  public List<Worker> services;
+  public List<Worker> services = new ArrayList<Worker>();
+
+  @Valid
+  @JsonProperty
+  Integer reloadTimeInSeconds = new Integer(30);
 
 }

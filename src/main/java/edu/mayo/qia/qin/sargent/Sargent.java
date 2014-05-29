@@ -12,20 +12,24 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.commons.dbcp.BasicDataSource;
-import org.flywaydb.core.Flyway;
+import net.sourceforge.argparse4j.inf.Namespace;
+
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Sargent extends Application<SargentConfiguration> {
 
   public static ExecutorService executor;
-  public static BasicDataSource dataSource;
-  public static JdbcTemplate template;
   public static Map<String, JobInfo> jobs = new ConcurrentHashMap<String, JobInfo>();
+  public static Namespace namespaceArguments;
+  public static Logger logger = LoggerFactory.getLogger(Sargent.class);
+  public static String configFile;
+  public static WorkerManager workerManager;
+  public static Environment environment;
 
   @Override
   public void initialize(Bootstrap<SargentConfiguration> bootstrap) {
@@ -34,40 +38,40 @@ public class Sargent extends Application<SargentConfiguration> {
 
   @Override
   public void run(SargentConfiguration configuration, Environment environment) throws Exception {
+    Sargent.environment = environment;
     // Add our resources to
     // the REST API will hang off of /rest, giving the AssetsBundle access to
     // '/'
     environment.jersey().setUrlPattern("/rest/*");
-
-    environment.jersey().register(new WorkerManager(configuration.services));
+    workerManager = new WorkerManager(configuration.services);
+    environment.jersey().register(workerManager);
     executor = environment.lifecycle().executorService("Worker-").build();
-    dataSource = new BasicDataSource();
-    dataSource.setDriverClassName("org.apache.derby.jdbc.EmbeddedDriver");
-    dataSource.setUrl("jdbc:derby:memory:testDB;create=true");
-    dataSource.setDefaultAutoCommit(true);
-    template = new JdbcTemplate(dataSource);
-    Flyway flyway = new Flyway();
-    flyway.setDataSource(dataSource);
-    flyway.migrate();
 
     QuartzManager manager = new QuartzManager(StdSchedulerFactory.getDefaultScheduler());
     environment.lifecycle().manage(manager);
 
     Scheduler scheduler = manager.scheduler;
 
-    // define the job and tie it to our HelloJob class
+    // Trigger the job to run now, and then repeat every 60 seconds
     JobDetail job = newJob(JobCleanup.class).withIdentity("cleanup", "alpha").build();
-
-    // Trigger the job to run now, and then repeat every 40 seconds
     Trigger trigger = newTrigger().withIdentity("trigger1", "group1").startNow().withSchedule(simpleSchedule().withIntervalInSeconds(60).repeatForever()).build();
 
     // Tell quartz to schedule the job using our trigger
     scheduler.scheduleJob(job, trigger);
 
+    // Reload the config file every 30 seconds
+    trigger = newTrigger().withIdentity("loadConfig", "group1").startNow().withSchedule(simpleSchedule().withIntervalInSeconds(configuration.reloadTimeInSeconds).repeatForever()).build();
+    job = newJob(WorkerManager.class).withIdentity("parse config", "alpha").build();
+    scheduler.scheduleJob(job, trigger);
+    environment.healthChecks().register("workerManager", workerManager);
   }
 
   public static void main(String[] args) throws Exception {
     System.setProperty("java.awt.headless", "true");
+    // Capture the last argument...
+    if (args.length > 0) {
+      configFile = args[args.length - 1];
+    }
     new Sargent().run(args);
   }
 

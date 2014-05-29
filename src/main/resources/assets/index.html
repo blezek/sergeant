@@ -8,21 +8,32 @@
 <h1>Sargent</h1>
 <p>Sargent is a simple DropWizard based Web application to allow command line programs to be run as web services.  Yes, I know this is dangerous, but so is driving a car.  If one is careful both can be done safely.</p>
 <h2>Usage</h2>
-<pre><code>    java -jar sargent.jar server sargent.yml</code></pre>
+<pre><code>java -jar sargent.jar server sargent.yml</code></pre>
 <h2>Defining services</h2>
 <p>Add a section to sargent.yml</p>
 <pre><code>workers:
   - endPoint: registration
-    commandLine: python -iterations @iterations @PatientCode
+    commandLine: ["python", "-iterations", "@iterations", "@PatientCode"]
     defaults:
       foo: "this is foo"
       bar: "this is bar"
       iterations: 10000
 
   - endPoint: sleep
-    commandLine: sleep @seconds
+    commandLine: ["sleep", "@seconds"]
     defaults:
-      seconds: 120</code></pre>
+      seconds: 120
+
+  - endPoint: echo
+    commandLine: ["echo", "@text"]
+    synchronous: true
+    defaults:
+      text: This space for rent</code></pre>
+<h2>Reloading Services</h2>
+<pre><code>reloadTimeInSeconds: 30</code></pre>
+<p>Reload all services every 30 seconds.  Allows new services to be added on the fly.  Existing services are updated, but obsolete services are not removed.</p>
+<p>List of services can be found at <a href="http://localhost:8080/rest/service">http://localhost:8080/rest/service</a></p>
+<h2>Services</h2>
 <p>Each service has several options</p>
 <ul>
 <li><strong>endPoint</strong>: name of the service, <a href="http://localhost:8080/rest/service/endPoint">http://localhost:8080/rest/service/endPoint</a></li>
@@ -31,8 +42,14 @@
 </ul>
 </li>
 <li><strong>defaults</strong>: map of command line defaults</li>
+<li><strong>synchronous</strong>: return results immediately</li>
 </ul>
-<h2>Examples</h2>
+<h3>Synchronous services</h3>
+<p>Synchronous services return the output immediately.</p>
+<pre><code>curl -POST -d "text=Something going on here" http://localhost:8080/rest/service/echo
+Something going on here</code></pre>
+<h2>Asynchronous services</h2>
+<p>By default, services return a uuid that can be used to retrieve results after processing has finished.</p>
 <h3>Sleep</h3>
 <pre><code>curl -POST -d seconds=120 http://localhost:8080/rest/service/sleep
 {
@@ -64,4 +81,5 @@
         "output": ""
     }
 }</code></pre>
+
 </body>

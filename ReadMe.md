@@ -6,7 +6,7 @@ Sargent is a simple DropWizard based Web application to allow command line progr
 
 Usage
 -----
-        java -jar sargent.jar server sargent.yml
+    java -jar sargent.jar server sargent.yml
 
 Defining services
 -----------------
@@ -14,26 +14,55 @@ Add a section to sargent.yml
 
     workers:
       - endPoint: registration
-        commandLine: python -iterations @iterations @PatientCode
+        commandLine: ["python", "-iterations", "@iterations", "@PatientCode"]
         defaults:
           foo: "this is foo"
           bar: "this is bar"
           iterations: 10000
 
       - endPoint: sleep
-        commandLine: sleep @seconds
+        commandLine: ["sleep", "@seconds"]
         defaults:
           seconds: 120
 
+      - endPoint: echo
+        commandLine: ["echo", "@text"]
+        synchronous: true
+        defaults:
+          text: This space for rent
+
+
+
+Reloading Services
+------------------
+    reloadTimeInSeconds: 30
+
+Reload all services every 30 seconds.  Allows new services to be added on the fly.  Existing services are updated, but obsolete services are not removed.
+
+List of services can be found at http://localhost:8080/rest/service
+
+Services
+--------
 Each service has several options
 
 - **endPoint**: name of the service, http://localhost:8080/rest/service/endPoint
 - **commandLine**: command line to run
   - any parameters of the form @key will be replaced by POST parameters
 - **defaults**: map of command line defaults
+- **synchronous**: return results immediately
 
-Examples
---------
+### Synchronous services
+
+Synchronous services return the output immediately.
+
+    curl -POST -d "text=Something going on here" http://localhost:8080/rest/service/echo
+    Something going on here
+
+
+
+
+## Asynchronous services
+By default, services return a uuid that can be used to retrieve results after processing has finished.
 
 ### Sleep
     curl -POST -d seconds=120 http://localhost:8080/rest/service/sleep
