@@ -1,0 +1,84 @@
+#!/bin/bash
+#
+#	/etc/rc.d/init.d/sargent
+#
+# Start the Sargent WebService.
+#
+# chkconfig: 2345 90 10
+# description: Sargent Web Service
+
+# processname: sargent
+
+source /etc/rc.d/init.d/functions
+
+if [ -r /etc/sargent.conf ];
+then
+  . /etc/sargent.conf
+else
+  USER=qin
+  SARGENT_HOME=/research/projects/ril/sargent/
+  SARGENT_CONFIG=$SARGENT_HOME/sargent.yml
+  JAVA_ARGS="$JAVA_ARGS -Xmx1048m -Xdebug -Xrunjdwp:transport=dt_socket,address=8051,server=y,suspend=n"
+  JAVA_HOME=/usr/java/default
+fi
+
+RETVAL=0
+prog="sargent"
+desc="Sargent WebService"
+
+export PATH=$PATH:/usr/local/sbin
+
+start() {
+  echo -n $"Starting $desc: "
+
+  daemonize -e /tmp/sargent.error -c $SARGENT_HOME -p /var/run/$prog.pid -l /var/lock/subsys/$prog -u $USER $JAVA_HOME/bin/java $JAVA_ARGS -jar sargent.jar server $SARGENT_CONFIG
+  RETVAL=$?
+  [ $RETVAL -eq 0 ] && success || failure
+  echo
+}
+
+stop() {
+  echo -n $"Shutting down $desc: "
+  __pids_var_run "$prog" "$pid_file"
+  RETVAL=$?
+  # Exit if we're not running
+  if [ $RETVAL -eq 3 ]; then
+    failure "$prog is not running"
+    echo
+    return $RETVAL
+  fi
+
+  killproc -p /var/run/$prog.pid $prog
+  RETVAL=$?
+  [ $RETVAL -eq 0 ] && success || failure
+  echo
+  [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$prog
+  [ $RETVAL -eq 0 ] && rm -f /var/run/$prog.pid
+  return $RETVAL
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    status $prog -p /var/run/$prog.pid
+    ;;
+  restart)
+    stop
+    start
+    RETVAL=$?
+    ;;
+  condrestart)
+    [ -e /var/lock/subsys/$prog ] && restart
+    RETVAL=$?
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|restart|condrestart}"
+    RETVAL=1
+esac
+
+exit $RETVAL
