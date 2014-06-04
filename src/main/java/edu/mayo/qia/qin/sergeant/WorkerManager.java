@@ -67,7 +67,7 @@ public class WorkerManager extends HealthCheck implements Job {
   @Path("/job")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getJob() {
-    return Response.ok(Sergeant.jobs).build();
+    return Response.ok(Sergeant.jobs.values()).build();
   }
 
   @GET
