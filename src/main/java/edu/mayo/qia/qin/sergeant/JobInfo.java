@@ -1,5 +1,6 @@
 package edu.mayo.qia.qin.sergeant;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
@@ -11,9 +12,12 @@ public class JobInfo {
   @JsonIgnore
   public StartedProcess startedProcess;
 
-  public Date startTime = new Date();
+  public String startTime = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z").format(new Date());
+  public long startTimeInMillis = new Date().getTime();
+
   public String uuid;
   public String commandLine;
+  public String endPoint;
 
   public String getStatus() {
     if (startedProcess.future().isDone()) {
