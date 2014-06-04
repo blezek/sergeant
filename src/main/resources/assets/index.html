@@ -2,15 +2,15 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Sargent help page</title>
+  <title>Sergeant help page</title>
 </head>
 <body>
-<h1>Sargent</h1>
-<p>Sargent is a simple DropWizard based Web application to allow command line programs to be run as web services.  Yes, I know this is dangerous, but so is driving a car.  If one is careful both can be done safely.</p>
+<h1>Sergeant</h1>
+<p>Sergeant is a simple DropWizard based Web application to allow command line programs to be run as web services.  Yes, I know this is dangerous, but so is driving a car.  If one is careful both can be done safely.</p>
 <h2>Usage</h2>
-<pre><code>java -jar sargent.jar server sargent.yml</code></pre>
+<pre><code>java -jar sergeant.jar server sergeant.yml</code></pre>
 <h2>Defining services</h2>
-<p>Add a section to sargent.yml</p>
+<p>Add a section to sergeant.yml</p>
 <pre><code>workers:
   - endPoint: registration
     commandLine: ["python", "-iterations", "@iterations", "@PatientCode"]
