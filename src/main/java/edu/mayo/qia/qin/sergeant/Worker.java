@@ -52,7 +52,9 @@ public class Worker {
       job.commandLine = buffer.toString();
       job.uuid = uuid;
       job.startedProcess = process;
+      job.endPoint = endPoint;
       Sergeant.jobs.put(uuid, job);
+
       return Response.ok(job).build();
     }
   }
