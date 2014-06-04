@@ -54,7 +54,7 @@ public class Sergeant extends Application<SergeantConfiguration> {
 
     // Trigger the job to run now, and then repeat every 60 seconds
     JobDetail job = newJob(JobCleanup.class).withIdentity("cleanup", "alpha").build();
-    Trigger trigger = newTrigger().withIdentity("trigger1", "group1").startNow().withSchedule(simpleSchedule().withIntervalInSeconds(60).repeatForever()).build();
+    Trigger trigger = newTrigger().withIdentity("trigger1", "group1").startNow().withSchedule(simpleSchedule().withIntervalInSeconds(configuration.reapTimeInSeconds).repeatForever()).build();
 
     // Tell quartz to schedule the job using our trigger
     scheduler.scheduleJob(job, trigger);

@@ -21,4 +21,7 @@ public class SergeantConfiguration extends Configuration {
   @JsonProperty
   Integer reloadTimeInSeconds = new Integer(30);
 
+  @Valid
+  @JsonProperty
+  Integer reapTimeInSeconds = new Integer(3600);
 }
