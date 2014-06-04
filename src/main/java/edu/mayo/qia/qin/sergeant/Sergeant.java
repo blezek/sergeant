@@ -1,4 +1,4 @@
-package edu.mayo.qia.qin.sargent;
+package edu.mayo.qia.qin.sergeant;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -21,24 +21,24 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Sargent extends Application<SargentConfiguration> {
+public class Sergeant extends Application<SergeantConfiguration> {
 
   public static ExecutorService executor;
   public static Map<String, JobInfo> jobs = new ConcurrentHashMap<String, JobInfo>();
   public static Namespace namespaceArguments;
-  public static Logger logger = LoggerFactory.getLogger(Sargent.class);
+  public static Logger logger = LoggerFactory.getLogger(Sergeant.class);
   public static String configFile;
   public static WorkerManager workerManager;
   public static Environment environment;
 
   @Override
-  public void initialize(Bootstrap<SargentConfiguration> bootstrap) {
+  public void initialize(Bootstrap<SergeantConfiguration> bootstrap) {
     bootstrap.addBundle(new AssetsBundle("/assets", "/", "index.html"));
   }
 
   @Override
-  public void run(SargentConfiguration configuration, Environment environment) throws Exception {
-    Sargent.environment = environment;
+  public void run(SergeantConfiguration configuration, Environment environment) throws Exception {
+    Sergeant.environment = environment;
     // Add our resources to
     // the REST API will hang off of /rest, giving the AssetsBundle access to
     // '/'
@@ -72,7 +72,7 @@ public class Sargent extends Application<SargentConfiguration> {
     if (args.length > 0) {
       configFile = args[args.length - 1];
     }
-    new Sargent().run(args);
+    new Sergeant().run(args);
   }
 
 }

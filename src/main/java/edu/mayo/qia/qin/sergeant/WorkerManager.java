@@ -1,10 +1,8 @@
-package edu.mayo.qia.qin.sargent;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import io.dropwizard.configuration.ConfigurationParsingException;
+package edu.mayo.qia.qin.sergeant;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,8 +24,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TreeTraversingParser;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.snakeyaml.error.MarkedYAMLException;
-import com.fasterxml.jackson.dataformat.yaml.snakeyaml.error.YAMLException;
 
 @Path("/")
 public class WorkerManager extends HealthCheck implements Job {
@@ -42,8 +38,15 @@ public class WorkerManager extends HealthCheck implements Job {
   }
 
   public void updateWorkers(List<Worker> workers) {
+    List<String> workerNames = new ArrayList<String>();
     for (Worker worker : workers) {
+      workerNames.add(worker.endPoint);
       workerMap.put(worker.endPoint, worker);
+    }
+    for (String key : workerMap.keySet()) {
+      if (!workerNames.contains(key)) {
+        workerMap.remove(key);
+      }
     }
   }
 
@@ -63,15 +66,15 @@ public class WorkerManager extends HealthCheck implements Job {
   @Path("/job")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getJob() {
-    return Response.ok(Sargent.jobs).build();
+    return Response.ok(Sergeant.jobs).build();
   }
 
   @GET
   @Path("/job/{uuid}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getJobInfo(@PathParam("uuid") String uuid) {
-    if (Sargent.jobs.containsKey(uuid)) {
-      return Response.ok(Sargent.jobs.get(uuid)).build();
+    if (Sergeant.jobs.containsKey(uuid)) {
+      return Response.ok(Sergeant.jobs.get(uuid)).build();
     } else {
       return Response.status(Status.NOT_FOUND).build();
     }
@@ -80,16 +83,16 @@ public class WorkerManager extends HealthCheck implements Job {
   @Override
   public void execute(JobExecutionContext context) throws JobExecutionException {
     // Parse the config file
-    try (InputStream input = new FileInputStream(Sargent.configFile)) {
-      ObjectMapper mapper = Sargent.environment.getObjectMapper();
+    try (InputStream input = new FileInputStream(Sergeant.configFile)) {
+      ObjectMapper mapper = Sergeant.environment.getObjectMapper();
 
       final JsonNode node = mapper.readTree(new YAMLFactory().createParser(input));
-      final SargentConfiguration config = mapper.readValue(new TreeTraversingParser(node), SargentConfiguration.class);
+      final SergeantConfiguration config = mapper.readValue(new TreeTraversingParser(node), SergeantConfiguration.class);
       if (config != null) {
-        Sargent.workerManager.updateWorkers(config.services);
+        Sergeant.workerManager.updateWorkers(config.services);
       }
     } catch (Exception e) {
-      Sargent.logger.error("Error parsing config file", e);
+      Sergeant.logger.error("Error parsing config file", e);
     }
   }
 

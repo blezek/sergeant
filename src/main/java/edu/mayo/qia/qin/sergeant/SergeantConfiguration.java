@@ -1,4 +1,4 @@
-package edu.mayo.qia.qin.sargent;
+package edu.mayo.qia.qin.sergeant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.dropwizard.Configuration;
 
-public class SargentConfiguration extends Configuration {
+public class SergeantConfiguration extends Configuration {
 
   @Valid
   @NotNull

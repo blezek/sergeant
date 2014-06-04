@@ -1,28 +1,16 @@
+                      _____                            _   
+                     / ____|                          | |  
+                    | (___   __ _ _ __ __ _  ___ _ __ | |_ 
+                     \___ \ / _` | '__/ _` |/ _ \ '_ \| __|
+                     ____) | (_| | | | (_| |  __/ | | | |_ 
+                    |_____/ \__,_|_|  \__, |\___|_| |_|\__|
+                                       __/ |               
+                                      |___/                
 
-
-                                                                                                                                         
-                                                                                                                                         
-   SSSSSSSSSSSSSSS                                                                                                         tttt          
- SS:::::::::::::::S                                                                                                     ttt:::t          
-S:::::SSSSSS::::::S                                                                                                     t:::::t          
-S:::::S     SSSSSSS                                                                                                     t:::::t          
-S:::::S              aaaaaaaaaaaaa  rrrrr   rrrrrrrrr      ggggggggg   ggggg    eeeeeeeeeeee    nnnn  nnnnnnnn    ttttttt:::::ttttttt    
-S:::::S              a::::::::::::a r::::rrr:::::::::r    g:::::::::ggg::::g  ee::::::::::::ee  n:::nn::::::::nn  t:::::::::::::::::t    
- S::::SSSS           aaaaaaaaa:::::ar:::::::::::::::::r  g:::::::::::::::::g e::::::eeeee:::::een::::::::::::::nn t:::::::::::::::::t    
-  SS::::::SSSSS               a::::arr::::::rrrrr::::::rg::::::ggggg::::::gge::::::e     e:::::enn:::::::::::::::ntttttt:::::::tttttt    
-    SSS::::::::SS      aaaaaaa:::::a r:::::r     r:::::rg:::::g     g:::::g e:::::::eeeee::::::e  n:::::nnnn:::::n      t:::::t          
-       SSSSSS::::S   aa::::::::::::a r:::::r     rrrrrrrg:::::g     g:::::g e:::::::::::::::::e   n::::n    n::::n      t:::::t          
-            S:::::S a::::aaaa::::::a r:::::r            g:::::g     g:::::g e::::::eeeeeeeeeee    n::::n    n::::n      t:::::t          
-            S:::::Sa::::a    a:::::a r:::::r            g::::::g    g:::::g e:::::::e             n::::n    n::::n      t:::::t    tttttt
-SSSSSSS     S:::::Sa::::a    a:::::a r:::::r            g:::::::ggggg:::::g e::::::::e            n::::n    n::::n      t::::::tttt:::::t
-S::::::SSSSSS:::::Sa:::::aaaa::::::a r:::::r             g::::::::::::::::g  e::::::::eeeeeeee    n::::n    n::::n      tt::::::::::::::t
-S:::::::::::::::SS  a::::::::::aa:::ar:::::r              gg::::::::::::::g   ee:::::::::::::e    n::::n    n::::n        tt:::::::::::tt
- SSSSSSSSSSSSSSS     aaaaaaaaaa  aaaarrrrrrr                gggggggg::::::g     eeeeeeeeeeeeee    nnnnnn    nnnnnn          ttttttttttt  
-                                                                    g:::::g                                                              
-                                                        gggggg      g:::::g                                                              
-                                                        g:::::gg   gg:::::g                                                              
-                                                         g::::::ggg:::::::g                                                              
-                                                          gg:::::::::::::g                                                               
-                                                            ggg::::::ggg                                                                 
-                                                               gggggg                                                                    
+   ________    ____   __           ____  _________________   ____       _     __         
+  / ____/ /   /  _/  / /_____     / __ \/ ____/ ___/_  __/  / __ )_____(_)___/ /___ ____ 
+ / /   / /    / /   / __/ __ \   / /_/ / __/  \__ \ / /    / __  / ___/ / __  / __ `/ _ \
+/ /___/ /____/ /   / /_/ /_/ /  / _, _/ /___ ___/ // /    / /_/ / /  / / /_/ / /_/ /  __/
+\____/_____/___/   \__/\____/  /_/ |_/_____//____//_/    /_____/_/  /_/\__,_/\__, /\___/ 
+                                                                            /____/       
 
