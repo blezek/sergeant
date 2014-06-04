@@ -1,14 +1,10 @@
-package edu.mayo.qia.qin.sargent;
+package edu.mayo.qia.qin.sergeant;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.UUID;
-import java.util.Vector;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,19 +16,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.LogOutputStream;
-import org.apache.commons.exec.PumpStreamHandler;
 import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.StartedProcess;
 
 public class Worker {
   public String endPoint;
   public List<String> commandLine;
   public Boolean synchronous = Boolean.FALSE;
+  public String description = "";
   public Map<String, String> defaults = new HashMap<String, String>();
 
   @GET
@@ -61,7 +52,7 @@ public class Worker {
       job.commandLine = buffer.toString();
       job.uuid = uuid;
       job.startedProcess = process;
-      Sargent.jobs.put(uuid, job);
+      Sergeant.jobs.put(uuid, job);
       return Response.ok(job).build();
     }
   }

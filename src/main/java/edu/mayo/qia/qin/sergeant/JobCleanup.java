@@ -1,4 +1,4 @@
-package edu.mayo.qia.qin.sargent;
+package edu.mayo.qia.qin.sergeant;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -11,11 +11,11 @@ public class JobCleanup implements Job {
 
   @Override
   public void execute(JobExecutionContext context) throws JobExecutionException {
-    for (JobInfo job : Sargent.jobs.values()) {
+    for (JobInfo job : Sergeant.jobs.values()) {
       long diff = new Date().getTime() - job.startTime.getTime();
 
       if (job.getStatus().equals("done") && TimeUnit.MILLISECONDS.toMinutes(diff) > 4) {
-        Sargent.jobs.remove(job.uuid);
+        Sergeant.jobs.remove(job.uuid);
       }
     }
   }

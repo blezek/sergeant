@@ -1,4 +1,4 @@
-package edu.mayo.qia.qin.sargent;
+package edu.mayo.qia.qin.sergeant;
 
 import java.util.Date;
 import java.util.concurrent.ExecutionException;

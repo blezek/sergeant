@@ -10,7 +10,7 @@ targetCompatibility = '1.7'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 // The main class of the application
-mainClassName = 'edu.mayo.qia.qin.sargent.Sargent'
+mainClassName = 'edu.mayo.qia.qin.sergeant.Sergeant'
 
 
 // Set our project variables

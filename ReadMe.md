@@ -1,16 +1,16 @@
-Sargent
+Sergeant
 =======
 
 
-Sargent is a simple DropWizard based Web application to allow command line programs to be run as web services.  Yes, I know this is dangerous, but so is driving a car.  If one is careful both can be done safely.
+Sergeant is a simple DropWizard based Web application to allow command line programs to be run as web services.  Yes, I know this is dangerous, but so is driving a car.  If one is careful both can be done safely.
 
 Usage
 -----
-    java -jar sargent.jar server sargent.yml
+    java -jar sergeant.jar server sergeant.yml
 
 Defining services
 -----------------
-Add a section to sargent.yml
+Add a section to sergeant.yml
 
     workers:
       - endPoint: registration

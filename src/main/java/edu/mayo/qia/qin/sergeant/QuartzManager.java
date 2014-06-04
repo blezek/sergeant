@@ -1,4 +1,4 @@
-package edu.mayo.qia.qin.sargent;
+package edu.mayo.qia.qin.sergeant;
 
 import io.dropwizard.lifecycle.Managed;
 
