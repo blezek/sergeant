@@ -1,0 +1,51 @@
+
+services:
+  - endPoint: registration
+    commandLine: ["python", "-iterations", "@iterations", "@PatientCode"]
+    defaults:
+      foo: "this is foo"
+      bar: "this is bar"
+      iterations: 10000
+
+  - endPoint: sleep
+    commandLine: ["sleep", "@seconds"]
+    defaults:
+      seconds: 120
+
+server:
+  applicationConnectors:
+    - type: http
+      port: 9090
+  adminConnectors:
+    - type: http
+      port: 9091
+
+# Logging settings.
+logging:
+
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+
+  # Logger-specific levels.
+  loggers:
+
+    # Sets the level for 'com.example.app' to DEBUG.
+    com.example.app: DEBUG
+
+    org.hibernate.SQL: ALL
+
+  appenders:
+    - type: console
+    - type: file
+      currentLogFilename: sargent.log
+
+      # When the log file rotates, the archived log will be renamed to this and gzipped. The
+      # %d is replaced with the previous day (yyyy-MM-dd). Custom rolling windows can be created
+      # by passing a SimpleDateFormat-compatible format as an argument: "%d{yyyy-MM-dd-hh}".
+      archivedLogFilenamePattern: ./logs/sargent-%d.log.gz
+
+      # The number of archived files to keep.
+      archivedFileCount: 14
+
+      # The timezone used to format dates. HINT: USE THE DEFAULT, UTC.
+      timeZone: UTC

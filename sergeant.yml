@@ -1,0 +1,26 @@
+
+
+
+# curl -POST -d PatientCode=12345 -d iterations=2000 http://qia.mayo.edu:8888/registration
+
+# How often to reload this configuration file
+reloadTimeInSeconds: 30
+
+services:
+  - endPoint: registration
+    commandLine: ["python", "-iterations", "@iterations", "@PatientCode"]
+    defaults:
+      foo: "this is foo"
+      bar: "this is bar"
+      iterations: 10000
+
+  - endPoint: sleep
+    commandLine: ["sleep", "@seconds"]
+    defaults:
+      seconds: 120
+
+  - endPoint: echo
+    commandLine: ["echo", "@text"]
+    synchronous: true
+    defaults:
+      text: This space for rent
