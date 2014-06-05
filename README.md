@@ -5,7 +5,7 @@ Sergeant
 Sergeant is a simple [DropWizard](http://dropwizard.github.io/dropwizard/) based web application to allow command line programs to be run as web services.  Yes, I know this is dangerous, but so is driving a car.  If one is careful both can be done safely.
 
 Installation
---------------
+----
 
 #### Linux / Mac OSX:
 
@@ -18,16 +18,16 @@ Installation
     cd sergeant
     gradlew.bat run
 
-http://localhost:8080/
+Open http://localhost:8080/
 
 Usage
---------
+----
 ```bash
 java -jar sergeant.jar server sergeant.yml
 ```
 
 Defining services
------------------------
+----
 
 **Services** are command line interfaces (CLI) exposed through sergeant as REST endpoints.  Services are defined using [YAML](http://www.yaml.org/spec/1.2/spec.html) (YAML Ain't Markup Language) in the **sergeant.yml** file, and have several parameters.
 
