@@ -25,6 +25,24 @@ public class Worker {
   public Boolean synchronous = Boolean.FALSE;
   public String description = "";
   public Map<String, String> defaults = new HashMap<String, String>();
+  public String curlCommand = null;
+
+  void formCurl() {
+    if (curlCommand != null) {
+      return;
+    }
+    StringBuilder buffer = new StringBuilder("curl -POST ");
+    for (String commandLine : this.commandLine) {
+      Matcher match = Pattern.compile("@(\\w*)").matcher(commandLine);
+      while (match.find()) {
+        String key = match.group(1);
+        String value = defaults.containsKey(key) ? defaults.get(key) : "VALUE";
+        buffer.append("-d '" + key + "=" + value + "' ");
+      }
+    }
+    buffer.append("http://localhost/rest/service/" + endPoint);
+    curlCommand = buffer.toString();
+  }
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
