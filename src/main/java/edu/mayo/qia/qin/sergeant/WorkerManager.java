@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -48,6 +49,9 @@ public class WorkerManager extends HealthCheck implements Job {
         workerMap.remove(key);
       }
     }
+    for (Worker worker : workers) {
+      worker.formCurl();
+    }
   }
 
   @GET
@@ -74,6 +78,22 @@ public class WorkerManager extends HealthCheck implements Job {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getJobInfo(@PathParam("uuid") String uuid) {
     if (Sergeant.jobs.containsKey(uuid)) {
+      return Response.ok(Sergeant.jobs.get(uuid)).build();
+    } else {
+      return Response.status(Status.NOT_FOUND).build();
+    }
+  }
+
+  @DELETE
+  @Path("/job/{uuid}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response delete(@PathParam("uuid") String uuid) {
+    if (Sergeant.jobs.containsKey(uuid)) {
+      JobInfo job = Sergeant.jobs.get(uuid);
+      if (!job.getStatus().equals("done")) {
+        job.startedProcess.process().destroy();
+      }
+      Sergeant.jobs.remove(uuid);
       return Response.ok(Sergeant.jobs.get(uuid)).build();
     } else {
       return Response.status(Status.NOT_FOUND).build();

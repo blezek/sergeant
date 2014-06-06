@@ -8,7 +8,7 @@
 
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
-
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.2.0/bootbox.min.js"></script>
 <script src="js/sergeant.js"></script>
 
 <body>
@@ -29,18 +29,21 @@
               <td>Command Line</td>
               <td>Status</td>
               <td>Output</td>
+              <td></td>
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="service in jobs | orderBy: 'startTimeInMillis':true">
-              <td>{{service.endPoint}}</td>
-              <td>{{service.startTime}}</td>
-              <td>{{service.commandLine}}</td>
-              <td>{{service.status}}</td>
-              <td>{{service.output}}</td>
+            <tr ng-repeat="job in jobs | orderBy: 'startTimeInMillis':true">
+              <td>{{job.endPoint}}</td>
+              <td>{{job.startTime}}</td>
+              <td>{{job.commandLine}}</td>
+              <td>{{job.status}}</td>
+              <td>{{job.output}}</td>
+              <td><div ng-click="cleanup(job)"><span class="glyphicon glyphicon-remove"></span></div></td>
             </tr>
           </tbody>
         </table>
+        <button ng-click="cleanupAll()" type="button" class="btn btn-success">Cleanup</button>
       </div>
 
       <hr/>
@@ -57,8 +60,8 @@
           <tbody>
             <tr ng-repeat="service in services | orderBy: 'endPoint' ">
               <td>{{service.endPoint}}</td>
-              <td style="white-space: pre-wrap;">{{service.description}}</td>
-              <td>{{service.commandLine.join(" ")}}</td>
+              <td><pre class="pre-scrollable">{{service.description}}</pre></td>
+              <td>{{service.commandLine.join(" ")}}<br/><kbd>{{service.curlCommand}}</kbd></td>
             </tr>
           </tbody>
         </table>
