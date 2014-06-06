@@ -16,6 +16,9 @@ services:
 
   - endPoint: sleep
     commandLine: ["sleep", "@seconds"]
+    description: |
+      pause for a specified number of seconds
+      A multiline description can use the pipe symbol
     defaults:
       seconds: 120
 
