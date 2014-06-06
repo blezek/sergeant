@@ -34,10 +34,16 @@ public class Worker {
     StringBuilder buffer = new StringBuilder("curl -POST ");
     for (String commandLine : this.commandLine) {
       Matcher match = Pattern.compile("@(\\w*)").matcher(commandLine);
+      boolean matched = false;
       while (match.find()) {
+        matched = true;
         String key = match.group(1);
         String value = defaults.containsKey(key) ? defaults.get(key) : "VALUE";
         buffer.append("-d '" + key + "=" + value + "' ");
+      }
+      if (!matched) {
+        // Add a dummy variable to keep CURL happy
+        buffer.append("-d 'dummy=keep CURL from using GET'");
       }
     }
     buffer.append("http://localhost/rest/service/" + endPoint);
