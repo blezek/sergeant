@@ -9,7 +9,7 @@ cd sergeant
 <pre class="editor-colors"><code>git clone https://github.com/dblezek/sergeant.git
 cd sergeant
 gradlew.bat run
-</code></pre><p><a href="http://localhost:8080/">http://localhost:8080/</a></p>
+</code></pre><p>Open <a href="http://localhost:8080/">http://localhost:8080/</a></p>
 <h2 id="usage">Usage</h2>
 <pre class="editor-colors"><code class="lang-bash"><div><span class="source shell">java -jar sergeant.jar server sergeant.yml</span></div></code></pre>
 <h2 id="defining-services">Defining services</h2>
@@ -19,6 +19,8 @@ gradlew.bat run
 <li><strong>description</strong>: a description of the endPoint.  <a href="http://stackoverflow.com/questions/3790454/in-yaml-how-do-i-break-a-string-over-multiple-lines">Descriptions can span multiple lines.</a></li>
 <li><strong>commandLine</strong>: an array of parameters that form the command line.  Any parameter of the form "@variable" will be replaced when sergeant runs the CLI.  See the <strong>sleep</strong> example below.</li>
 <li><strong>synchronous</strong>: return results immediately</li>
+<li><strong>gridSubmit</strong>: Submit to a grid using <a href="http://www.drmaa.org/">DRMAA</a>, must start up with a drmaa library available in <code>java.library.path</code>.  Ignores the <code>synchronous</code> setting.</li>
+<li><strong>gridSpecification</strong>: String to pass through DRMAA into the underlying grid implementation.</li>
 <li><strong>defaults</strong>: a map of default values for any variables in the command line.  This parameter is optional, and variables do not need defaults.</li>
 </ul>
 <h3 id="synchronous-services">Synchronous services</h3>

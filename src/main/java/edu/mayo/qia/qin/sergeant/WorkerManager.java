@@ -90,8 +90,10 @@ public class WorkerManager extends HealthCheck implements Job {
   public Response delete(@PathParam("uuid") String uuid) {
     if (Sergeant.jobs.containsKey(uuid)) {
       JobInfo job = Sergeant.jobs.get(uuid);
-      if (!job.getStatus().equals("done")) {
-        job.startedProcess.process().destroy();
+      try {
+        job.shutdown();
+      } catch (Exception e) {
+        return Response.serverError().entity("Failed to shutdown job; " + e.getMessage()).build();
       }
       Sergeant.jobs.remove(uuid);
       return Response.ok(Sergeant.jobs.get(uuid)).build();
