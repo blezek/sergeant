@@ -25,34 +25,32 @@ repositories {
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-    // The production code uses the SLF4J logging API at compile time
-    compile (
-      'org.slf4j:slf4j-api:1.7.5',
-          'io.dropwizard:dropwizard-core:' + dropwizardVersion,
+  // The production code uses the SLF4J logging API at compile time
+  compile (
+    'org.slf4j:slf4j-api:1.7.5',
+    'io.dropwizard:dropwizard-core:' + dropwizardVersion,
     'io.dropwizard:dropwizard-hibernate:' + dropwizardVersion,
     'io.dropwizard:dropwizard-assets:' + dropwizardVersion,
     'io.dropwizard:dropwizard-migrations:' + dropwizardVersion,
-'io.dropwizard:dropwizard-auth:' + dropwizardVersion,
-'io.dropwizard:dropwizard-testing:' + dropwizardVersion,
+    'io.dropwizard:dropwizard-auth:' + dropwizardVersion,
+    'io.dropwizard:dropwizard-testing:' + dropwizardVersion,
     "org.apache.derby:derby:10.10.1.1",
     'org.flywaydb:flyway-core:3.0',
     "commons-cli:commons-cli:1.2"    ,
-        'commons-dbcp:commons-dbcp:1.4',
+    'commons-dbcp:commons-dbcp:1.4',
     "org.springframework:spring-jdbc:3.2.2.RELEASE",
-"org.zeroturnaround:zt-exec:1.5",
+    "org.zeroturnaround:zt-exec:1.5",
     "org.apache.commons:commons-exec:1.1",
     "org.quartz-scheduler:quartz:2.2.1",
-
-
-
-)
+    'us.levk:drmaa-gridengine:6.2u5'
+    )
 
     // Declare the dependency for your favourite test framework you want to use in your tests.
     // TestNG is also supported by the Gradle Test task. Just change the
     // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
     // 'test.useTestNG()' to your build script.
     testCompile "junit:junit:4.11"
-}
+  }
 
 task collectJars(type: Copy){
   into "$buildDir/libs/lib"
