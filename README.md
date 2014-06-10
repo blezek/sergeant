@@ -35,6 +35,8 @@ Defining services
 - **description**: a description of the endPoint.  [Descriptions can span multiple lines.](http://stackoverflow.com/questions/3790454/in-yaml-how-do-i-break-a-string-over-multiple-lines)
 - **commandLine**: an array of parameters that form the command line.  Any parameter of the form "@variable" will be replaced when sergeant runs the CLI.  See the **sleep** example below.
 - **synchronous**: return results immediately
+- **gridSubmit**: Submit to a grid using [DRMAA](http://www.drmaa.org/), must start up with a drmaa library available in `java.library.path`.  Ignores the `synchronous` setting.
+- **gridSpecification**: String to pass through DRMAA into the underlying grid implementation.
 - **defaults**: a map of default values for any variables in the command line.  This parameter is optional, and variables do not need defaults.
 
 ### Synchronous services

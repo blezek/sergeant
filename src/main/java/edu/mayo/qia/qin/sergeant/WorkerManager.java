@@ -49,6 +49,9 @@ public class WorkerManager extends HealthCheck implements Job {
         workerMap.remove(key);
       }
     }
+    for (Worker worker : workers) {
+      worker.formCurl();
+    }
   }
 
   @GET
@@ -84,12 +87,16 @@ public class WorkerManager extends HealthCheck implements Job {
   @DELETE
   @Path("/job/{uuid}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response deleteJob(@PathParam("uuid") String uuid) {
+  public Response delete(@PathParam("uuid") String uuid) {
     if (Sergeant.jobs.containsKey(uuid)) {
       JobInfo job = Sergeant.jobs.get(uuid);
-      job.startedProcess.process().destroy();
+      try {
+        job.shutdown();
+      } catch (Exception e) {
+        return Response.serverError().entity("Failed to shutdown job; " + e.getMessage()).build();
+      }
       Sergeant.jobs.remove(uuid);
-      return Response.ok().build();
+      return Response.ok(Sergeant.jobs.get(uuid)).build();
     } else {
       return Response.status(Status.NOT_FOUND).build();
     }

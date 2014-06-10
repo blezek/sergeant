@@ -21,6 +21,8 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 public class Sergeant extends Application<SergeantConfiguration> {
 
   public static ExecutorService executor;
@@ -46,6 +48,12 @@ public class Sergeant extends Application<SergeantConfiguration> {
     workerManager = new WorkerManager(configuration.services);
     environment.jersey().register(workerManager);
     executor = environment.lifecycle().executorService("Worker-").build();
+
+    // Always pretty print output
+    environment.getObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
+
+    // SGE Session management
+    environment.lifecycle().manage(new SGEManaged());
 
     QuartzManager manager = new QuartzManager(StdSchedulerFactory.getDefaultScheduler());
     environment.lifecycle().manage(manager);

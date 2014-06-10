@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ -r sergeant-env.sh ]; then
+  . sergeant-env.sh
+fi
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# echo "sergeantw is working in $DIR"
+# echo "the environment is:"
+# echo "running $@"
+
+"$@"
