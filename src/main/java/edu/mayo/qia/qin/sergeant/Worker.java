@@ -1,5 +1,6 @@
 package edu.mayo.qia.qin.sergeant;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +16,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
+import org.ggf.drmaa.JobTemplate;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.StartedProcess;
 
@@ -23,9 +26,11 @@ public class Worker {
   public String endPoint;
   public List<String> commandLine;
   public Boolean synchronous = Boolean.FALSE;
+  public Boolean gridSubmit = Boolean.FALSE;
   public String description = "";
   public Map<String, String> defaults = new HashMap<String, String>();
   public String curlCommand = null;
+  public String gridSpecification = "-V";
 
   void formCurl() {
     if (curlCommand != null) {
@@ -59,27 +64,46 @@ public class Worker {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response post(final MultivaluedMap<String, String> formData) throws Exception {
-    String uuid = UUID.randomUUID().toString();
     List<String> commandLine = formCommandLine(formData);
+    StringBuilder buffer = new StringBuilder();
+    String sep = "";
+    for (String arg : commandLine) {
+      buffer.append(sep).append(arg);
+      sep = " ";
+    }
 
-    StartedProcess process = new ProcessExecutor().command(commandLine).readOutput(true).destroyOnExit().timeout(1, TimeUnit.HOURS).start();
-    if (synchronous) {
-      return Response.ok(process.future().get().outputUTF8()).build();
-    } else {
-      JobInfo job = new JobInfo();
-      StringBuilder buffer = new StringBuilder();
-      String sep = "";
-      for (String arg : commandLine) {
-        buffer.append(sep).append(arg);
-        sep = " ";
+    if (gridSubmit) {
+      if (!SGEManaged.isAvailable()) {
+        return Response.serverError().entity("SGE is not available").build();
       }
+      new File("logs").mkdir();
+      SGEJobInfo job = new SGEJobInfo();
+      job.logPath = new File("logs", job.uuid + ".out");
+      JobTemplate template = SGEManaged.session.createJobTemplate();
+      template.setWorkingDirectory(System.getProperty("user.dir"));
+      template.setRemoteCommand(commandLine.get(0));
+      template.setArgs(commandLine.subList(1, commandLine.size()));
+      template.setJoinFiles(true);
+      template.setOutputPath(":" + job.logPath.getAbsolutePath());
+      template.setNativeSpecification(gridSpecification);
       job.commandLine = buffer.toString();
-      job.uuid = uuid;
-      job.startedProcess = process;
-      job.endPoint = endPoint;
-      Sergeant.jobs.put(uuid, job);
-
+      job.jobID = SGEManaged.session.runJob(template);
+      SGEManaged.session.deleteJobTemplate(template);
+      Sergeant.jobs.put(job.uuid, job);
       return Response.ok(job).build();
+    } else {
+
+      StartedProcess process = new ProcessExecutor().command(commandLine).readOutput(true).destroyOnExit().timeout(1, TimeUnit.HOURS).start();
+      if (synchronous) {
+        return Response.ok(process.future().get().outputUTF8()).build();
+      } else {
+        ProcessJobInfo job = new ProcessJobInfo();
+        job.commandLine = buffer.toString();
+        job.startedProcess = process;
+        job.endPoint = endPoint;
+        Sergeant.jobs.put(job.uuid, job);
+        return Response.ok(job).build();
+      }
     }
   }
 

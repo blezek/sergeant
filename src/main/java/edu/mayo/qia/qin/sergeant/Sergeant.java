@@ -52,6 +52,9 @@ public class Sergeant extends Application<SergeantConfiguration> {
     // Always pretty print output
     environment.getObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
 
+    // SGE Session management
+    environment.lifecycle().manage(new SGEManaged());
+
     QuartzManager manager = new QuartzManager(StdSchedulerFactory.getDefaultScheduler());
     environment.lifecycle().manage(manager);
 
