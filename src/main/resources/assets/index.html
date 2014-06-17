@@ -8,7 +8,8 @@
 
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.2.0/bootbox.min.js"></script>
+<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.0.js"></script>
+
 <script src="js/sergeant.js"></script>
 
 <body>
@@ -21,6 +22,13 @@
 
       <div ng-controller="JobController">
         <h2>Jobs</h2>
+
+        <div ng-show="jobs.length > 0">
+          {{numberOfJobs}} running jobs<br/>
+          <button ng-click="cleanupAll()" class="btn btn-success">Cleanup</button>
+        </div>
+
+        <pagination total-items="numberOfJobs" ng-model="currentPage" items-per-page="pageSize"></pagination>
         <table class="table table-condensed table-striped">
           <thead>
             <tr>
@@ -33,7 +41,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="job in jobs | orderBy: 'startTimeInMillis':true">
+            <tr ng-repeat="job in jobs | orderBy: 'startTimeInMillis':true | startFrom:(currentPage-1)*pageSize | limitTo:pageSize ">
               <td>{{job.endPoint}}</td>
               <td>{{job.startTime}}</td>
               <td>{{job.commandLine}}</td>
@@ -43,7 +51,7 @@
             </tr>
           </tbody>
         </table>
-        <button ng-click="cleanupAll()" type="button" class="btn btn-success">Cleanup</button>
+        <pagination total-items="numberOfJobs" ng-model="currentPage" items-per-page="pageSize"></pagination>
       </div>
 
       <hr/>
