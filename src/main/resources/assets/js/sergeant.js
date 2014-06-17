@@ -2,9 +2,25 @@
 console.log("starting up");
 var sergeantApp = angular.module('sergeantApp',[]);
 
+//We already have a limitTo filter built-in to angular,
+//let's make a startFrom filter
+sergeantApp.filter('startFrom', function() {
+    return function(input, start) {
+        start = +start; //parse to int
+        // console.log("Starting at " + start, input )
+        return input.slice(start);
+    }
+});
+
+
 sergeantApp.controller ('JobController', function($scope,$http,$timeout) {
   $scope.jobs = {}
   $scope.status = null;
+  $scope.pageSize = 5;
+  $scope.currentPage = 0;
+  $scope.numberOfPages = function() {
+    return Math.ceil($scope.jobs.length/$scope.pageSize);
+  }
 
   // Cleanup
   $scope.cleanup = function(job) {

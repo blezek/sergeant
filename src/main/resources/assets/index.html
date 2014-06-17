@@ -21,6 +21,7 @@
 
       <div ng-controller="JobController">
         <h2>Jobs</h2>
+        Found {{jobs.length}} Jobs
         <table class="table table-condensed table-striped">
           <thead>
             <tr>
@@ -33,7 +34,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="job in jobs | orderBy: 'startTimeInMillis':true">
+            <tr ng-repeat="job in jobs | orderBy: 'startTimeInMillis':true | startFrom:currentPage*pageSize | limitTo:pageSize ">
               <td>{{job.endPoint}}</td>
               <td>{{job.startTime}}</td>
               <td>{{job.commandLine}}</td>
@@ -43,6 +44,19 @@
             </tr>
           </tbody>
         </table>
+<button type="button" class="btn" ng-disabled="currentPage >= jobs.length/pageSize - 1" ng-click="currentPage=0">
+  Beginning
+</button>
+        <button type="button" class="btn" ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+          Previous
+        </button>
+        {{currentPage+1}}/{{numberOfPages()}}
+<button type="button" class="btn" ng-disabled="currentPage >= jobs.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+  Next
+</button>
+<button type="button" class="btn" ng-disabled="currentPage >= jobs.length/pageSize - 1" ng-click="currentPage= numberOfPages()-1">
+  End
+</button>
         <button ng-click="cleanupAll()" type="button" class="btn btn-success">Cleanup</button>
       </div>
 
