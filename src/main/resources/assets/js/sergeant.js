@@ -24,7 +24,7 @@ sergeantApp.controller ('JobController', function($scope,$http,$timeout) {
   $scope.cleanupAll = function() {
     for(var i = 0; i < $scope.jobs.length; i++) {
       var job = $scope.jobs[i];
-      if ( job.status == "done") {
+      if ( job.status == "done" || job.status == 'failed') {
         $scope.cleanup(job);
       }
     }
