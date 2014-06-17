@@ -1,6 +1,6 @@
 'use strict';
 console.log("starting up");
-var sergeantApp = angular.module('sergeantApp',[]);
+var sergeantApp = angular.module('sergeantApp',['ui.bootstrap']);
 
 //We already have a limitTo filter built-in to angular,
 //let's make a startFrom filter
@@ -12,12 +12,12 @@ sergeantApp.filter('startFrom', function() {
     }
 });
 
-
 sergeantApp.controller ('JobController', function($scope,$http,$timeout) {
   $scope.jobs = {}
   $scope.status = null;
-  $scope.pageSize = 5;
-  $scope.currentPage = 0;
+  $scope.pageSize = 25;
+  $scope.currentPage = 1;
+  $scope.numberOfJobs = 0;
   $scope.numberOfPages = function() {
     return Math.ceil($scope.jobs.length/$scope.pageSize);
   }
@@ -51,6 +51,7 @@ sergeantApp.controller ('JobController', function($scope,$http,$timeout) {
     $http({method: 'GET', url: 'rest/job'}).
     success(function(data,status,headers,config) {
       $scope.jobs = data;
+      $scope.numberOfJobs = $scope.jobs.length;
       $timeout($scope.update, 5000);
       $scope.status = null;
     }).
