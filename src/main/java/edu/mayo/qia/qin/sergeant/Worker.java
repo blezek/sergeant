@@ -12,11 +12,14 @@ import java.util.regex.Pattern;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.ggf.drmaa.JobTemplate;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -59,6 +62,13 @@ public class Worker {
   @Produces(MediaType.APPLICATION_JSON)
   public Response get() {
     return Response.ok(this).build();
+  }
+
+  @PUT
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response put(@Context UriInfo ui) throws Exception {
+    MultivaluedMap<String, String> formData = ui.getQueryParameters();
+    return post(formData);
   }
 
   @POST
