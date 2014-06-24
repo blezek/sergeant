@@ -12,11 +12,14 @@ import java.util.regex.Pattern;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.ggf.drmaa.JobTemplate;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -37,20 +40,21 @@ public class Worker {
       return;
     }
     StringBuilder buffer = new StringBuilder("curl -POST ");
+    boolean matched = false;
     for (String commandLine : this.commandLine) {
       Matcher match = Pattern.compile("@(\\w*)").matcher(commandLine);
-      boolean matched = false;
       while (match.find()) {
         matched = true;
         String key = match.group(1);
         String value = defaults.containsKey(key) ? defaults.get(key) : "VALUE";
         buffer.append("-d '" + key + "=" + value + "' ");
       }
-      if (!matched) {
-        // Add a dummy variable to keep CURL happy
-        buffer.append("-d 'dummy=keep CURL from using GET'");
-      }
     }
+    if (!matched) {
+      // Add a dummy variable to keep CURL happy
+      buffer.append("-d 'dummy=keep CURL from using GET' ");
+    }
+
     buffer.append("http://localhost/rest/service/" + endPoint);
     curlCommand = buffer.toString();
   }
@@ -59,6 +63,13 @@ public class Worker {
   @Produces(MediaType.APPLICATION_JSON)
   public Response get() {
     return Response.ok(this).build();
+  }
+
+  @PUT
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response put(@Context UriInfo ui) throws Exception {
+    MultivaluedMap<String, String> formData = ui.getQueryParameters();
+    return post(formData);
   }
 
   @POST
