@@ -19,6 +19,8 @@ import javax.ws.rs.core.Response.Status;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,7 +30,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 @Path("/")
 public class WorkerManager extends HealthCheck implements Job {
-
+  static Logger logger = LoggerFactory.getLogger(WorkerManager.class);
   private Map<String, Worker> workerMap = new ConcurrentHashMap<String, Worker>();
 
   public WorkerManager() {
@@ -93,7 +95,7 @@ public class WorkerManager extends HealthCheck implements Job {
       try {
         job.shutdown();
       } catch (Exception e) {
-        return Response.serverError().entity("Failed to shutdown job; " + e.getMessage()).build();
+        logger.error("Failed to shutdown the job: " + uuid, e);
       }
       Sergeant.jobs.remove(uuid);
       return Response.ok(Sergeant.jobs.get(uuid)).build();
