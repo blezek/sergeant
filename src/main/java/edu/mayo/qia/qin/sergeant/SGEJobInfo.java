@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.ggf.drmaa.DrmaaException;
+import org.ggf.drmaa.InvalidJobException;
 import org.ggf.drmaa.Session;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -58,7 +59,11 @@ public class SGEJobInfo extends JobInfo {
 
   @Override
   public void shutdown() throws Exception {
-    SGEManaged.session.control(jobID, Session.TERMINATE);
+    try {
+      SGEManaged.session.control(jobID, Session.TERMINATE);
+    } catch (InvalidJobException e) {
+      // The job may be long gone... ignore
+    }
   }
 
 }
