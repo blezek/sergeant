@@ -3,11 +3,6 @@ package edu.mayo.qia.qin.sergeant;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-
-import org.zeroturnaround.exec.StartedProcess;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public abstract class JobInfo {
 
