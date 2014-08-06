@@ -59,6 +59,7 @@ public class SGEJobInfo extends JobInfo {
 
   @Override
   public void shutdown() throws Exception {
+    super.shutdown();
     try {
       SGEManaged.session.control(jobID, Session.TERMINATE);
     } catch (InvalidJobException e) {

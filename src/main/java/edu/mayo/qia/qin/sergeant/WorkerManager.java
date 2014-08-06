@@ -1,6 +1,8 @@
 package edu.mayo.qia.qin.sergeant;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +86,23 @@ public class WorkerManager extends HealthCheck implements Job {
     } else {
       return Response.status(Status.NOT_FOUND).build();
     }
+  }
+
+  @GET
+  @Path("/job/{uuid}/{file}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getJobInfo(@PathParam("uuid") String uuid, @PathParam("file") String file) {
+    if (Sergeant.jobs.containsKey(uuid)) {
+      JobInfo job = Sergeant.jobs.get(uuid);
+      if (job.fileMap.containsKey(file)) {
+        try {
+          return Response.ok(new FileInputStream(job.fileMap.get(file))).build();
+        } catch (FileNotFoundException e) {
+          return Response.status(Status.NOT_FOUND).build();
+        }
+      }
+    }
+    return Response.status(Status.NOT_FOUND).build();
   }
 
   @DELETE

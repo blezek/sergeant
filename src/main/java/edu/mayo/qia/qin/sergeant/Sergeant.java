@@ -32,6 +32,7 @@ public class Sergeant extends Application<SergeantConfiguration> {
   public static String configFile;
   public static WorkerManager workerManager;
   public static Environment environment;
+  public static SergeantConfiguration configuration;
 
   @Override
   public void initialize(Bootstrap<SergeantConfiguration> bootstrap) {
@@ -41,6 +42,7 @@ public class Sergeant extends Application<SergeantConfiguration> {
   @Override
   public void run(SergeantConfiguration configuration, Environment environment) throws Exception {
     Sergeant.environment = environment;
+    Sergeant.configuration = configuration;
     // Add our resources to
     // the REST API will hang off of /rest, giving the AssetsBundle access to
     // '/'

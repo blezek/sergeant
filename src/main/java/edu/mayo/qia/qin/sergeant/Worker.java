@@ -1,31 +1,39 @@
 package edu.mayo.qia.qin.sergeant;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.io.IOUtils;
 import org.ggf.drmaa.JobTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.StartedProcess;
 
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataMultiPart;
+
 public class Worker {
+  static Logger logger = LoggerFactory.getLogger(Worker.class);
   public String endPoint;
   public List<String> commandLine;
   public Boolean synchronous = Boolean.FALSE;
@@ -65,23 +73,33 @@ public class Worker {
     return Response.ok(this).build();
   }
 
-  @PUT
+  // @PUT
+  // @Produces(MediaType.APPLICATION_JSON)
+  // public Response put(@Context UriInfo ui) throws Exception {
+  // MultivaluedMap<String, String> formData = ui.getQueryParameters();
+  // return post(formData);
+  // }
+
+  @POST
+  @Path("experimental")
+  @Consumes({ "multipart/form-data", "multipart/mixed" })
   @Produces(MediaType.APPLICATION_JSON)
-  public Response put(@Context UriInfo ui) throws Exception {
-    MultivaluedMap<String, String> formData = ui.getQueryParameters();
-    return post(formData);
+  public Response postExperimental(final FormDataMultiPart multiPart) {
+
+    logger.info("Start experiment, maaahhaaaaahaaaaaha");
+    Map<String, List<FormDataBodyPart>> fields = multiPart.getFields();
+    for (Entry<String, List<FormDataBodyPart>> field : fields.entrySet()) {
+      logger.info("Got field: " + field.getKey());
+      for (FormDataBodyPart part : field.getValue()) {
+        logger.info("Field: " + part.getName() + " = " + part.getValue());
+      }
+    }
+    return Response.ok().build();
   }
 
   @POST
   @Produces(MediaType.APPLICATION_JSON)
-  public Response post(final MultivaluedMap<String, String> formData) throws Exception {
-    List<String> commandLine = formCommandLine(formData);
-    StringBuilder buffer = new StringBuilder();
-    String sep = "";
-    for (String arg : commandLine) {
-      buffer.append(sep).append(arg);
-      sep = " ";
-    }
+  public Response post(final FormDataMultiPart multiPart) throws Exception {
 
     if (gridSubmit) {
       if (!SGEManaged.isAvailable()) {
@@ -89,6 +107,8 @@ public class Worker {
       }
       new File("logs").mkdir();
       SGEJobInfo job = new SGEJobInfo();
+      formCommandLine(multiPart, job);
+
       job.logPath = new File("logs", job.uuid + ".out");
       JobTemplate template = SGEManaged.session.createJobTemplate();
       template.setWorkingDirectory(System.getProperty("user.dir"));
@@ -97,19 +117,18 @@ public class Worker {
       template.setJoinFiles(true);
       template.setOutputPath(":" + job.logPath.getAbsolutePath());
       template.setNativeSpecification(gridSpecification);
-      job.commandLine = buffer.toString();
       job.jobID = SGEManaged.session.runJob(template);
       SGEManaged.session.deleteJobTemplate(template);
       Sergeant.jobs.put(job.uuid, job);
       return Response.ok(job).build();
     } else {
+      ProcessJobInfo job = new ProcessJobInfo();
+      formCommandLine(multiPart, job);
 
-      StartedProcess process = new ProcessExecutor().command(commandLine).readOutput(true).destroyOnExit().timeout(1, TimeUnit.HOURS).start();
+      StartedProcess process = new ProcessExecutor().command(job.parsedCommandLine).readOutput(true).destroyOnExit().timeout(1, TimeUnit.HOURS).start();
       if (synchronous) {
         return Response.ok(process.future().get().outputUTF8()).build();
       } else {
-        ProcessJobInfo job = new ProcessJobInfo();
-        job.commandLine = buffer.toString();
         job.startedProcess = process;
         job.endPoint = endPoint;
         Sergeant.jobs.put(job.uuid, job);
@@ -135,7 +154,84 @@ public class Worker {
       }
       convertedCommandLine.add(cl);
     }
+    StringBuilder buffer = new StringBuilder();
+    String sep = "";
+    for (String arg : convertedCommandLine) {
+      buffer.append(sep).append(arg);
+      sep = " ";
+    }
     return convertedCommandLine;
+  }
+
+  private void formCommandLine(FormDataMultiPart multiPart, JobInfo job) throws Exception {
+    List<String> convertedCommandLine = new ArrayList<String>();
+    for (String originalArg : this.commandLine) {
+      String arg = originalArg;
+      Matcher match;
+      match = Pattern.compile("@(\\w*)").matcher(originalArg);
+      while (match.find()) {
+        String replacementText = match.group(0);
+        String key = match.group(1);
+        String value = defaults.get(key);
+        if (multiPart.getFields().containsKey(key)) {
+          value = multiPart.getFields().get(key).get(0).getValue();
+        }
+        value = value == null ? "" : value;
+        arg = arg.replaceAll(replacementText, value);
+      }
+
+      // Find input values
+      match = Pattern.compile("<(\\w*)").matcher(originalArg);
+      while (match.find()) {
+        String replacementText = match.group(0);
+        String key = match.group(1);
+        String value = null;
+        if (multiPart.getFields().containsKey(key)) {
+          // Write to a temp file
+          InputStream is = multiPart.getField(key).getEntityAs(InputStream.class);
+          File dir = new File(Sergeant.configuration.storageDirectory, job.uuid);
+          value = multiPart.getField(key).getName();
+          File out = new File(dir, new File(value).getName());
+          value = out.toString();
+          dir.mkdirs();
+          try (OutputStream output = new FileOutputStream(out)) {
+            IOUtils.copy(is, output);
+          }
+          job.fileMap.put(key, out);
+        }
+        value = value == null ? "" : value;
+        arg = arg.replaceAll(replacementText, value);
+      }
+
+      // Find output values
+      match = Pattern.compile(">(\\w*)").matcher(originalArg);
+      while (match.find()) {
+        String replacementText = match.group(0);
+        String key = match.group(1);
+        String value = null;
+        if (multiPart.getFields().containsKey(key)) {
+          // Write to a temp file
+          File dir = new File(Sergeant.configuration.storageDirectory, job.uuid);
+          value = multiPart.getField(key).getValue();
+          File out = new File(dir, new File(value).getName());
+          value = out.toString();
+          dir.mkdirs();
+          job.fileMap.put(key, out);
+        }
+        value = value == null ? "" : value;
+        arg = arg.replaceAll(replacementText, value);
+      }
+
+      convertedCommandLine.add(arg);
+    }
+    StringBuilder buffer = new StringBuilder();
+    String sep = "";
+    for (String arg : convertedCommandLine) {
+      buffer.append(sep).append(arg);
+      sep = " ";
+    }
+    job.parsedCommandLine = convertedCommandLine;
+    job.commandLine = buffer.toString();
   }
 
 }

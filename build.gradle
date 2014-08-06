@@ -42,7 +42,8 @@ dependencies {
     "org.zeroturnaround:zt-exec:1.5",
     "org.apache.commons:commons-exec:1.1",
     "org.quartz-scheduler:quartz:2.2.1",
-    'us.levk:drmaa-gridengine:6.2u5'
+    'us.levk:drmaa-gridengine:6.2u5',
+    'com.sun.jersey.contribs:jersey-multipart:1.18.1'
     )
 
     // Declare the dependency for your favourite test framework you want to use in your tests.

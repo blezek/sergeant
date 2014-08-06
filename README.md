@@ -131,6 +131,59 @@ curl http://localhost:8080/rest/job
   }
 }
 ```
+## Positional and File Parameters
+
+In the definition of a service, there are several options for passing parameters, both file and positional arguments.
+
+### Positional Arguments
+Positional arguments are denoted by an ```@``` symbol in the ```commandLine```.  A `POST` call can substitute a value for the ```@``` parameter.
+
+### Input File Arguments
+Input file arguments are denoted by an ```<``` symbol in the ```commandLine```.
+
+### Output File Arguments
+Input file arguments are denoted by an ```>``` symbol in the ```commandLine```.
+
+
+### Example
+
+The following service expects 2 file arguments, ```<input``` is a file that will be uploaded via REST, and ```>output``` will be available for retrieval once the job is completed.
+
+```yml
+- endPoint: copy
+  commandLine: ["cp", "<input", ">output"]
+  synchronous: false
+```
+
+```bash
+curl -v -POST --form output=temp --form input=@sergeant.yml http://localhost:8080/rest/service/copy
+```
+Sergeant returns
+
+```json
+{
+  "startTime" : "Wed, 6 Aug 2014 15:44:33 -0500",
+  "startTimeInMillis" : 1407357873317,
+  "uuid" : "5f3c7466-03e5-41e9-a0bf-cd0680be449f",
+  "commandLine" : "cp /tmp/5f3c7466-03e5-41e9-a0bf-cd0680be449f/input /tmp/5f3c7466-03e5-41e9-a0bf-cd0680be449f/temp",
+  "endPoint" : "copy",
+  "fileMap" : {
+    "input" : "/tmp/5f3c7466-03e5-41e9-a0bf-cd0680be449f/input",
+    "output" : "/tmp/5f3c7466-03e5-41e9-a0bf-cd0680be449f/temp"
+  },
+  "parsedCommandLine" : [ "cp", "/tmp/5f3c7466-03e5-41e9-a0bf-cd0680be449f/input", "/tmp/5f3c7466-03e5-41e9-a0bf-cd0680be449f/temp" ],
+  "exitValue" : -1,
+  "output" : "",
+  "status" : "running"
+}
+```
+
+To retrieve the output file, use the ```uuid``` and ```output``` key.
+
+```bash
+ curl http://localhost:8080/rest/job/5f3c7466-03e5-41e9-a0bf-cd0680be449f/output
+ <response truncated>
+```
 
 
 #### Example sergeant.yml
