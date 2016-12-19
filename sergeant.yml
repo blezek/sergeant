@@ -1,8 +1,3 @@
-
-
-
-# curl -POST -d PatientCode=12345 -d iterations=2000 http://qia.mayo.edu:8888/registration
-
 # How often to reload this configuration file
 reloadTimeInSeconds: 30
 

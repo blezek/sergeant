@@ -28,6 +28,15 @@ Usage
 java -jar sergeant.jar server sergeant.yml
 ```
 
+Building
+----
+
+Sergeant uses [Gradle](https://gradle.org) and defines several useful targets:
+
+* `run` run Sergeant with the provided `sergeant.yml` definition
+* `installDist` build a distribution in `build/install/`
+* `installTar` and `distZip` build distributions in `buind/distributions`
+
 Defining services
 ----
 

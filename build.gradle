@@ -3,10 +3,6 @@ apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'application'
 
-// Use Java 7 by default
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
-
 // UTF-8 should be standard by now. So use it!
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
@@ -20,11 +16,11 @@ project.ext {
   springVersion = "3.2.2.RELEASE"
 
 }
+
 repositories {
   mavenCentral()
 }
 
-// In this section you declare the dependencies for your production and test code
 dependencies {
   // The production code uses the SLF4J logging API at compile time
   compile (
@@ -32,26 +28,13 @@ dependencies {
     'io.dropwizard:dropwizard-core:' + dropwizardVersion,
     'io.dropwizard:dropwizard-forms:' + dropwizardVersion,
     'io.dropwizard:dropwizard-assets:' + dropwizardVersion,
-    // 'io.dropwizard:dropwizard-migrations:' + dropwizardVersion,
-    // 'io.dropwizard:dropwizard-auth:' + dropwizardVersion,
-    // 'io.dropwizard:dropwizard-testing:' + dropwizardVersion,
     'org.glassfish.jersey.media:jersey-media-multipart:2.15',
-    "org.apache.derby:derby:10.10.1.1",
-    'org.flywaydb:flyway-core:3.0',
-    "commons-cli:commons-cli:1.2"    ,
-    'commons-dbcp:commons-dbcp:1.4',
-    "org.springframework:spring-jdbc:3.2.2.RELEASE",
     "org.zeroturnaround:zt-exec:1.5",
     "org.apache.commons:commons-exec:1.1",
     "org.quartz-scheduler:quartz:2.2.1",
     'us.levk:drmaa-gridengine:6.2u5',
-    // 'com.sun.jersey.contribs:jersey-multipart:1.8'
     )
 
-    // Declare the dependency for your favourite test framework you want to use in your tests.
-    // TestNG is also supported by the Gradle Test task. Just change the
-    // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
-    // 'test.useTestNG()' to your build script.
     testCompile "junit:junit:4.11"
   }
 
@@ -70,7 +53,7 @@ jar.dependsOn collectJars
 
 // Configure the run task to start the Dropwizard service
 run {
-  args 'server', 'sargent.yml'
+  args 'server', 'sergeant.yml'
 }
 
 test {
@@ -78,5 +61,5 @@ test {
 }
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '1.11'
+  gradleVersion = '3.2.1'
 }
