@@ -91,6 +91,7 @@ public class Worker {
       new File("logs").mkdir();
       SGEJobInfo job = new SGEJobInfo();
       formCommandLine(multiPart, job);
+      logger.warn("Parsed command line to be: " + job.parsedCommandLine);
 
       job.logPath = new File("logs", job.uuid + ".out");
       JobTemplate template = SGEManaged.session.createJobTemplate();
@@ -100,6 +101,8 @@ public class Worker {
       template.setJoinFiles(true);
       template.setOutputPath(":" + job.logPath.getAbsolutePath());
       template.setNativeSpecification(gridSpecification);
+      logger.warn("Running: " + template.getRemoteCommand() + " args: " + template.getArgs());
+
       job.jobID = SGEManaged.session.runJob(template);
       SGEManaged.session.deleteJobTemplate(template);
       Sergeant.jobs.put(job.uuid, job);
