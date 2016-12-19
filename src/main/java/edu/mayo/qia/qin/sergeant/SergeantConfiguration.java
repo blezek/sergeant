@@ -24,4 +24,9 @@ public class SergeantConfiguration extends Configuration {
   @Valid
   @JsonProperty
   Integer reapTimeInSeconds = new Integer(3600);
+
+  @Valid
+  @JsonProperty
+  String storageDirectory = null;
+
 }

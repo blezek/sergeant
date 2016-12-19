@@ -1,13 +1,14 @@
 package edu.mayo.qia.qin.sergeant;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
-import org.zeroturnaround.exec.StartedProcess;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.io.FileUtils;
 
 public abstract class JobInfo {
 
@@ -17,10 +18,14 @@ public abstract class JobInfo {
   public String uuid = UUID.randomUUID().toString();
   public String commandLine;
   public String endPoint;
+  public Map<String, File> fileMap = new HashMap<String, File>();
+  public List<String> parsedCommandLine;
 
   public abstract String getStatus();
 
   public abstract String getOutput() throws Exception;
 
-  public abstract void shutdown() throws Exception;
+  public void shutdown() throws Exception {
+    FileUtils.deleteDirectory(new File(Sergeant.configuration.storageDirectory, uuid));
+  };
 }

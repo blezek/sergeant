@@ -6,6 +6,9 @@
 # How often to reload this configuration file
 reloadTimeInSeconds: 30
 
+# Where to store temp files
+storageDirectory: /tmp/
+
 services:
   - endPoint: registration
     commandLine: ["python", "-iterations", "@iterations", "@PatientCode"]
@@ -27,6 +30,10 @@ services:
     synchronous: true
     defaults:
       text: This space for rent
+
+  - endPoint: copy
+    commandLine: ["cp", "<input", ">output"]
+    synchronous: false
 
 
 # Logging settings.

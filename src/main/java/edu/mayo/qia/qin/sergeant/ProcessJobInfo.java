@@ -39,6 +39,7 @@ public class ProcessJobInfo extends JobInfo {
 
   @Override
   public void shutdown() throws Exception {
+    super.shutdown();
     if (!getStatus().equals("done")) {
       startedProcess.process().destroy();
     }
