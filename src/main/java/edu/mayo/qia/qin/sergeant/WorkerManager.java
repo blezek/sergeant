@@ -1,14 +1,5 @@
 package edu.mayo.qia.qin.sergeant;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,17 +9,25 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.codahale.metrics.health.HealthCheck;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TreeTraversingParser;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.health.HealthCheck;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TreeTraversingParser;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Path("/")
 public class WorkerManager extends HealthCheck implements Job {
@@ -67,7 +66,8 @@ public class WorkerManager extends HealthCheck implements Job {
 
   @Path("/service/{endpoint}")
   public Worker get(@PathParam("endpoint") String endPoint) {
-    return workerMap.get(endPoint);
+    Worker w = workerMap.get(endPoint);
+    return w;
   }
 
   @GET

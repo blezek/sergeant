@@ -1,5 +1,20 @@
 package edu.mayo.qia.qin.sergeant;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+
+import org.apache.commons.io.IOUtils;
+import org.ggf.drmaa.JobTemplate;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.StartedProcess;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -8,29 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.io.IOUtils;
-import org.ggf.drmaa.JobTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.StartedProcess;
-
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataMultiPart;
 
 public class Worker {
   static Logger logger = LoggerFactory.getLogger(Worker.class);
@@ -80,21 +75,33 @@ public class Worker {
   // return post(formData);
   // }
 
-  @POST
-  @Path("experimental")
-  @Consumes({ "multipart/form-data", "multipart/mixed" })
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response postExperimental(final FormDataMultiPart multiPart) {
+  // @POST
+  // @Path("experimental")
+  // @Consumes({"multipart/form-data", "multipart/mixed"})
+  // @Produces(MediaType.APPLICATION_JSON)
+  // public Response postExperimental(final FormDataMultiPart multiPart) {
+  //
+  // logger.info("Start experiment, maaahhaaaaahaaaaaha");
+  // Map<String, List<FormDataBodyPart>> fields = multiPart.getFields();
+  // for (Entry<String, List<FormDataBodyPart>> field : fields.entrySet()) {
+  // logger.info("Got field: " + field.getKey());
+  // for (FormDataBodyPart part : field.getValue()) {
+  // logger.info("Field: " + part.getName() + " = " + part.getValue());
+  // }
+  // }
+  // return Response.ok().build();
+  // }
 
-    logger.info("Start experiment, maaahhaaaaahaaaaaha");
-    Map<String, List<FormDataBodyPart>> fields = multiPart.getFields();
-    for (Entry<String, List<FormDataBodyPart>> field : fields.entrySet()) {
-      logger.info("Got field: " + field.getKey());
-      for (FormDataBodyPart part : field.getValue()) {
-        logger.info("Field: " + part.getName() + " = " + part.getValue());
+  @POST
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response postMVM(MultivaluedMap<String, String> formData) throws Exception {
+    FormDataMultiPart multiPart = new FormDataMultiPart();
+    for (String key : formData.keySet()) {
+      for (String v : formData.get(key)) {
+        multiPart.field(key, v);
       }
     }
-    return Response.ok().build();
+    return post(multiPart);
   }
 
   @POST
