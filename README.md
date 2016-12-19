@@ -11,12 +11,14 @@ Installation
 
     git clone https://github.com/dblezek/sergeant.git
     cd sergeant
-    ./gradlew run
+    ./gradlew installDist
+    build/install/sergeant/bin/sergeant sergeant.yml
 
 #### Windows
     git clone https://github.com/dblezek/sergeant.git
     cd sergeant
-    gradlew.bat run
+    gradlew.bat installDist
+    build/install/sergeant/bin/sergeant.bat sergeant.yml
 
 Open http://localhost:8080/
 
@@ -25,6 +27,15 @@ Usage
 ```bash
 java -jar sergeant.jar server sergeant.yml
 ```
+
+Building
+----
+
+Sergeant uses [Gradle](https://gradle.org) and defines several useful targets:
+
+* `run` run Sergeant with the provided `sergeant.yml` definition
+* `installDist` build a distribution in `build/install/`
+* `installTar` and `distZip` build distributions in `buind/distributions`
 
 Defining services
 ----
