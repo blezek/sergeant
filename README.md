@@ -12,13 +12,13 @@ Installation
     git clone https://github.com/dblezek/sergeant.git
     cd sergeant
     ./gradlew installDist
-    build/install/sergeant/bin/sergeant sergeant.yml
+    build/install/sergeant/bin/sergeant server sergeant.yml
 
 #### Windows
     git clone https://github.com/dblezek/sergeant.git
     cd sergeant
     gradlew.bat installDist
-    build/install/sergeant/bin/sergeant.bat sergeant.yml
+    build/install/sergeant/bin/sergeant.bat server sergeant.yml
 
 Open http://localhost:8080/
 

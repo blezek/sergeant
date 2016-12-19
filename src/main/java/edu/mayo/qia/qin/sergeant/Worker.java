@@ -68,30 +68,6 @@ public class Worker {
     return Response.ok(this).build();
   }
 
-  // @PUT
-  // @Produces(MediaType.APPLICATION_JSON)
-  // public Response put(@Context UriInfo ui) throws Exception {
-  // MultivaluedMap<String, String> formData = ui.getQueryParameters();
-  // return post(formData);
-  // }
-
-  // @POST
-  // @Path("experimental")
-  // @Consumes({"multipart/form-data", "multipart/mixed"})
-  // @Produces(MediaType.APPLICATION_JSON)
-  // public Response postExperimental(final FormDataMultiPart multiPart) {
-  //
-  // logger.info("Start experiment, maaahhaaaaahaaaaaha");
-  // Map<String, List<FormDataBodyPart>> fields = multiPart.getFields();
-  // for (Entry<String, List<FormDataBodyPart>> field : fields.entrySet()) {
-  // logger.info("Got field: " + field.getKey());
-  // for (FormDataBodyPart part : field.getValue()) {
-  // logger.info("Field: " + part.getName() + " = " + part.getValue());
-  // }
-  // }
-  // return Response.ok().build();
-  // }
-
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response postMVM(MultivaluedMap<String, String> formData) throws Exception {
@@ -115,15 +91,18 @@ public class Worker {
       new File("logs").mkdir();
       SGEJobInfo job = new SGEJobInfo();
       formCommandLine(multiPart, job);
+      logger.warn("Parsed command line to be: " + job.parsedCommandLine);
 
       job.logPath = new File("logs", job.uuid + ".out");
       JobTemplate template = SGEManaged.session.createJobTemplate();
       template.setWorkingDirectory(System.getProperty("user.dir"));
-      template.setRemoteCommand(commandLine.get(0));
-      template.setArgs(commandLine.subList(1, commandLine.size()));
+      template.setRemoteCommand(job.parsedCommandLine.get(0));
+      template.setArgs(job.parsedCommandLine.subList(1, job.parsedCommandLine.size()));
       template.setJoinFiles(true);
       template.setOutputPath(":" + job.logPath.getAbsolutePath());
       template.setNativeSpecification(gridSpecification);
+      logger.warn("Running: " + template.getRemoteCommand() + " args: " + template.getArgs());
+
       job.jobID = SGEManaged.session.runJob(template);
       SGEManaged.session.deleteJobTemplate(template);
       Sergeant.jobs.put(job.uuid, job);
